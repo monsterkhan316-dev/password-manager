@@ -2,10 +2,27 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
+import json
+import urllib.request
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24))
 DB_FILE = "vault.db"
+DISCORD_WEBHOOK = os.environ.get("DISCORD_WEBHOOK", "")
+
+def send_discord(message):
+    if not DISCORD_WEBHOOK:
+        return
+    try:
+        data = json.dumps({"content": message}).encode("utf-8")
+        req = urllib.request.Request(
+            DISCORD_WEBHOOK,
+            data=data,
+            headers={"Content-Type": "application/json"}
+        )
+        urllib.request.urlopen(req, timeout=5)
+    except Exception as e:
+        print(f"Discord error: {e}")
 
 def init_db():
     conn = sqlite3.connect(DB_FILE)
@@ -52,6 +69,7 @@ def signup():
             c.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)", (username, password_hash))
             conn.commit()
             conn.close()
+            send_discord(f"✅ New Signup: `{username}`")
             flash("Account ban gaya! Ab login karo.")
             return redirect(url_for("login"))
         except sqlite3.IntegrityError:
@@ -72,6 +90,7 @@ def login():
         if row and check_password_hash(row[1], password):
             session["user_id"] = row[0]
             session["username"] = username
+            send_discord(f"🔓 Login: `{username}`")
             return redirect(url_for("dashboard"))
         else:
             flash("Username ya password ghalat hai")
@@ -103,6 +122,7 @@ def add_password():
                   (session["user_id"], site_name, site_username, site_password))
         conn.commit()
         conn.close()
+        send_discord(f"💾 Password Saved: `{session.get('username')}` → `{site_name}`")
         flash("Password save ho gaya")
     return redirect(url_for("dashboard"))
 
