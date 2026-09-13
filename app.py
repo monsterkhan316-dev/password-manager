@@ -4,7 +4,7 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24))
 DB_FILE = "vault.db"
 
 def init_db():
@@ -25,6 +25,8 @@ def init_db():
         FOREIGN KEY (user_id) REFERENCES users(id))""")
     conn.commit()
     conn.close()
+
+init_db()
 
 @app.route("/")
 def index():
@@ -122,5 +124,4 @@ def logout():
     return redirect(url_for("login"))
 
 if __name__ == "__main__":
-    init_db()
     app.run(host="0.0.0.0", port=5000)
