@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SecureVault</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { color: #333; font-size: 22px; }
+        .header .user { color: #666; font-size: 14px; }
+        .logout { background: #e74c3c; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; }
+        .logout:hover { background: #c0392b; }
+        .card { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); margin-bottom: 20px; }
+        .card h2 { color: #333; font-size: 18px; margin-bottom: 16px; }
+        label { display: block; color: #555; font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+        input { width: 100%; padding: 10px; margin-bottom: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        input:focus { outline: none; border-color: #667eea; }
+        button { background: #667eea; color: #fff; padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; }
+        button:hover { background: #5568d3; }
+        .pw-list { list-style: none; }
+        .pw-item { background: #f8f9fa; padding: 14px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #667eea; }
+        .pw-info { flex: 1; }
+        .pw-info .site { font-weight: 600; color: #333; font-size: 15px; }
+        .pw-info .user { color: #666; font-size: 13px; margin-top: 2px; }
+        .pw-info .pass { color: #888; font-size: 13px; margin-top: 2px; font-family: monospace; }
+        .pw-actions a { color: #e74c3c; text-decoration: none; font-size: 13px; padding: 6px 10px; border-radius: 6px; background: #ffe0e0; }
+        .empty { text-align: center; color: #999; padding: 30px; font-size: 14px; }
+        .flash { background: #e0ffe0; color: #060; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🔐 SecureVault</h1>
+                <div class="user">Welcome, {{ username }}!</div>
+            </div>
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        
+        <div class="card">
+            <h2>➕ Naya Password Save Karo</h2>
+            <form method="POST" action="/add">
+                <label>Site ka Naam</label>
+                <input type="text" name="site_name" placeholder="Facebook, Gmail, etc." required>
+                
+                <label>Username</label>
+                <input type="text" name="site_username" required>
+                
+                <label>Password</label>
+                <input type="text" name="site_password" required>
+                
+                <button type="submit">Save Password</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Saved Passwords ({{ passwords|length }})</h2>
+            {% if passwords %}
+                <ul class="pw-list">
+                    {% for pw in passwords %}
+                    <li class="pw-item">
+                        <div class="pw-info">
+                            <div class="site">{{ pw[1] }}</div>
+                            <div class="user">👤 {{ pw[2] }}</div>
+                            <div class="pass">🔑 {{ pw[3] }}</div>
+                        </div>
+                        <div class="pw-actions">
+                            <a href="/delete/{{ pw[0] }}">Delete</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty">Abhi koi password save nahi hua</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - SecureVault</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .card { background: #fff; padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.2); width: 100%; max-width: 400px; }
+        h1 { text-align: center; color: #333; margin-bottom: 8px; font-size: 28px; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 24px; font-size: 14px; }
+        label { display: block; color: #555; font-size: 14px; margin-bottom: 6px; font-weight: 600; }
+        input { width: 100%; padding: 12px; margin-bottom: 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
+        input:focus { outline: none; border-color: #667eea; }
+        button { width: 100%; padding: 13px; background: #667eea; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        button:hover { background: #5568d3; }
+        .link { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
+        .link a { color: #667eea; text-decoration: none; font-weight: 600; }
+        .flash { background: #ffe0e0; color: #c00; padding: 10px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; text-align: center; }
+        .flash.success { background: #e0ffe0; color: #060; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔐 SecureVault</h1>
+        <p class="subtitle">Apna account banao</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        
+        <form method="POST">
+            <label>Username</label>
+            <input type="text" name="username" required minlength="3">
+            
+            <label>Password</label>
+            <input type="password" name="password" required minlength="6">
+            
+            <button type="submit">Sign Up</button>
+        </form>
+        
+        <p class="link">Pehle se account hai? <a href="/login">Login karo</a></p>
+    </div>
+</body>
+</html>
